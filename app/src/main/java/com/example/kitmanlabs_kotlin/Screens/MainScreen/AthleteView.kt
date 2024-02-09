@@ -4,7 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -24,9 +24,10 @@ import com.example.kitmanlabs_kotlin.R
 @Composable
 fun AthleteView(athlete: AthleteItem) {
     Row(
-        modifier = Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         SubcomposeAsyncImage(
+            modifier = Modifier.size(64.dp),
             model = athlete.image.url,
             contentDescription = "The image of the athlete ${athlete.first_name} ${athlete.last_name}",
             loading = {
@@ -38,6 +39,7 @@ fun AthleteView(athlete: AthleteItem) {
             },
             error = {
                 Image(
+                    modifier = Modifier.size(64.dp),
                     painter = painterResource(R.drawable.person_icon),
                     contentDescription = "Placeholder person icon, loading failed"
                 )

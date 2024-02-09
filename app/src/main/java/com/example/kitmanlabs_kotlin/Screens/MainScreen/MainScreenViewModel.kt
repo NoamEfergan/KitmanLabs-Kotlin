@@ -13,6 +13,7 @@ import retrofit2.HttpException
 import java.io.IOException
 
 sealed interface MainScreenLoadingState {
+    data class Success(val data: MainScreenViewModel.PresentableData) : MainScreenLoadingState
     data object Error : MainScreenLoadingState // TODO: Hold the different errors
     data object Loading : MainScreenLoadingState
     data object Idle : MainScreenLoadingState
@@ -21,10 +22,11 @@ sealed interface MainScreenLoadingState {
 class MainScreenViewModel : ViewModel() {
     class PresentableData : LinkedHashMap<SquadItem, List<AthleteItem>>()
 
-    var presentableData: PresentableData = PresentableData()
-        private set
     private val networkService = KitmanService
-    var loadingState: MainScreenLoadingState by mutableStateOf(MainScreenLoadingState.Idle)
+    val mockPresentableData: PresentableData
+        get() = matchAthletesWithSquads(AthleteItem.mock, SquadItem.mock)
+
+    var loadingState: MainScreenLoadingState by mutableStateOf(MainScreenLoadingState.Success(data = mockPresentableData))
         private set
 
     fun fetchData() {
@@ -34,9 +36,10 @@ class MainScreenViewModel : ViewModel() {
                 val squadResponse = networkService.instance.getSquads().body()
                 val athleteResponse = networkService.instance.getAthletes().body()
                 if (squadResponse != null && athleteResponse != null) {
-                    presentableData =
+                    MainScreenLoadingState.Success(
                         matchAthletesWithSquads(athleteResponse.athletes, squadResponse.squads)
-                    MainScreenLoadingState.Idle
+                    )
+
                 } else {
                     MainScreenLoadingState.Error
                 }
@@ -51,15 +54,16 @@ class MainScreenViewModel : ViewModel() {
     }
 
     private fun matchAthletesWithSquads(
-        athletes: List<AthleteItem>,
-        squads: List<SquadItem>
+        athletes: List<AthleteItem>, squads: List<SquadItem>
     ): PresentableData {
-        var result = PresentableData()
+        val result = PresentableData()
         for (squad in squads) {
-            result[squad] = athletes.filter { it.squad_ids.contains(squad.id) }
+            val filteredAthletes = athletes.filter { it.squad_ids.contains(squad.id) }
+            if (filteredAthletes.isNotEmpty()) {
+                result[squad] = filteredAthletes
+            }
         }
-        result = result.filter { it.value.isNotEmpty() } as PresentableData
         return result
-
     }
+
 }

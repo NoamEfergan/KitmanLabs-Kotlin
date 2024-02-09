@@ -5,12 +5,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -29,9 +27,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.example.kitmanlabs_kotlin.Models.Login.LoginResponse
 import com.example.kitmanlabs_kotlin.R
+import com.example.kitmanlabs_kotlin.Screens.SharedViews.ErrorState
+import com.example.kitmanlabs_kotlin.Screens.SharedViews.LoadingState
 import com.example.kitmanlabs_kotlin.ui.theme.KitmanLabsKotlinTheme
 
 @Composable
@@ -47,22 +46,13 @@ fun LoginScreen() {
         when (viewModel.loadingUiState) {
             LoginState.Idle -> LoginState(viewModel)
             LoginState.Loading -> LoadingState()
-            LoginState.Error -> ErrorState(viewModel)
+            LoginState.Error -> ErrorState { viewModel.retry() }
             is LoginState.Success -> SuccessState(
                 (viewModel.loadingUiState as LoginState.Success).name,
                 viewModel
             )
         }
     }
-}
-
-@Composable
-fun ErrorState(viewModel: LoginScreenViewModel) {
-    Text(text = "Whoops! something went wrong. Please try again!")
-    Button(onClick = { viewModel.retry() }) {
-        Text(text = "Retry")
-    }
-    
 }
 
 @Composable
@@ -73,14 +63,6 @@ fun SuccessState(response: LoginResponse?, viewModel: LoginScreenViewModel) {
     }
 }
 
-@Composable
-fun LoadingState() {
-    CircularProgressIndicator(
-        modifier = Modifier.width(64.dp),
-        color = MaterialTheme.colorScheme.secondary,
-        trackColor = MaterialTheme.colorScheme.surfaceVariant,
-    )
-}
 
 @Composable
 fun LoginState(viewModel: LoginScreenViewModel) {
