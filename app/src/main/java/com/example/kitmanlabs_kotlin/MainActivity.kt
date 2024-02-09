@@ -9,7 +9,11 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.kitmanlabs_kotlin.Screens.LoginScreen.LoginScreen
+import com.example.kitmanlabs_kotlin.Screens.MainScreen.MainScreen
 import com.example.kitmanlabs_kotlin.ui.theme.KitmanLabsKotlinTheme
 
 class MainActivity : ComponentActivity() {
@@ -17,15 +21,27 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             KitmanLabsKotlinTheme {
-                // A surface container using the 'background' color from the theme
+
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    LoginScreen()
+                    NavRoot()
                 }
             }
         }
+    }
+}
+
+@Composable
+fun NavRoot() {
+    val navController = rememberNavController()
+    NavHost(navController = navController, startDestination = "login") {
+        composable("login") { LoginScreen {
+            navController.navigate("main")
+        }
+        }
+        composable("main") { MainScreen() } // TODO: This should accept the name
     }
 }
 
@@ -33,7 +49,5 @@ class MainActivity : ComponentActivity() {
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
-    KitmanLabsKotlinTheme {
-        LoginScreen()
-    }
+    NavRoot()
 }

@@ -3,7 +3,7 @@ package com.example.kitmanlabs_kotlin.Models.MainView.Athlete
 import com.example.kitmanlabs_kotlin.Models.MainView.Image
 import kotlinx.serialization.Serializable
 
-@Serializable
+
 data class AthleteItem(
     val first_name: String,
     val id: Int,

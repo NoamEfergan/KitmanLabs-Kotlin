@@ -1,5 +1,6 @@
 package com.example.kitmanlabs_kotlin.Screens.LoginScreen
 
+import android.util.Log
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -34,7 +35,7 @@ import com.example.kitmanlabs_kotlin.Screens.SharedViews.LoadingState
 import com.example.kitmanlabs_kotlin.ui.theme.KitmanLabsKotlinTheme
 
 @Composable
-fun LoginScreen() {
+fun LoginScreen(onNavigateToMain: (String) -> Unit) {
     val viewModel by remember { mutableStateOf(LoginScreenViewModel()) }
 
     Column(
@@ -47,10 +48,14 @@ fun LoginScreen() {
             LoginState.Idle -> LoginState(viewModel)
             LoginState.Loading -> LoadingState()
             LoginState.Error -> ErrorState { viewModel.retry() }
-            is LoginState.Success -> SuccessState(
-                (viewModel.loadingUiState as LoginState.Success).name,
-                viewModel
-            )
+            is LoginState.Success -> {
+                val name = (viewModel.loadingUiState as LoginState.Success).name?.username
+                if (name != null) {
+                    onNavigateToMain(name)
+                } else {
+                    ErrorState { viewModel.retry() }
+                }
+            }
         }
     }
 }
@@ -141,6 +146,8 @@ private fun TextError(field: String) {
 @Composable
 fun LoginScreenPreview() {
     KitmanLabsKotlinTheme {
-        LoginScreen()
+        LoginScreen {
+            Log.i("login", it)
+        }
     }
 }

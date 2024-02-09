@@ -26,7 +26,7 @@ class MainScreenViewModel : ViewModel() {
     val mockPresentableData: PresentableData
         get() = matchAthletesWithSquads(AthleteItem.mock, SquadItem.mock)
 
-    var loadingState: MainScreenLoadingState by mutableStateOf(MainScreenLoadingState.Success(data = mockPresentableData))
+    var loadingState: MainScreenLoadingState by mutableStateOf(MainScreenLoadingState.Idle)
         private set
 
     fun fetchData() {
@@ -37,7 +37,7 @@ class MainScreenViewModel : ViewModel() {
                 val athleteResponse = networkService.instance.getAthletes().body()
                 if (squadResponse != null && athleteResponse != null) {
                     MainScreenLoadingState.Success(
-                        matchAthletesWithSquads(athleteResponse.athletes, squadResponse.squads)
+                        matchAthletesWithSquads(athleteResponse, squadResponse)
                     )
 
                 } else {

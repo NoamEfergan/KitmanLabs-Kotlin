@@ -1,6 +1,5 @@
 import kotlinx.serialization.Serializable
 
-@Serializable
 data class SquadItem(
     val created_at: String,
     val id: Int,
