@@ -23,9 +23,11 @@ class MainScreenViewModel : ViewModel() {
     class PresentableData : LinkedHashMap<SquadItem, List<AthleteItem>>()
 
     private val networkService = KitmanService
+    val mockPresentableData: PresentableData
+        get() = matchAthletesWithSquads(AthleteItem.mock, SquadItem.mock)
 
     var loadingState: MainScreenLoadingState by mutableStateOf(MainScreenLoadingState.Idle)
-        private set
+        internal set
 
     fun fetchData() {
         if (loadingState == MainScreenLoadingState.Loading) {
